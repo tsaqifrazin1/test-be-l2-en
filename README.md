@@ -21,6 +21,7 @@ Here is the backend stack you **_must_** use for this project:
 
 - Built using a docker file.
 - Any changes to the data needs to be recorded on the database level.
+- File uploading.
 
 ### More Technical Details
 
