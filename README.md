@@ -16,10 +16,14 @@ Here is the backend stack you **_must_** use for this project:
 - TypeScript
 - PostgreSQL
 - Docker
+- Upload files
+- audit logs (a table to record update and delete operations in the database)
+- Typeorm
+
 
 ### Other Things the Project Needs to Have
 
-- Built using a docker file.
+- Built using a docker file. (And docker-compose)
 - Any changes to the data needs to be recorded on the database level.
 - File uploading.
 
@@ -31,10 +35,10 @@ The entire team has agreed on some specifications and technical limitations:
 - There is a data schema.
 - There are about 100 products that need to be managed, so use pagination techniques.
 - The designated pages:
-  - List all products with search and pagination features
+  - List all products with **_search_** and pagination features
   - Product details
   - Add a product
-  - Checkout flow
+  - **_Checkout flow_** (We would love to see your creativity!)
 
 Example schema:
 
@@ -80,3 +84,5 @@ Make sure the project is built using docker, we will test by running your docker
 Don’t forget to set your GitHub repo to public and share it with us.
 
 Happy coding!
+
+Please submit your finished test to [bit.ly/4cWYsiX](https://bit.ly/4cWYsiX)
