@@ -53,7 +53,7 @@ export class UserController extends BaseController {
     summary: 'Get User',
   })
   @UseGuards(JwtAuthGuard, RolesTypeGuard)
-  @RolesTypeDecorators(RoleType.SUPERADMIN)
+  @RolesTypeDecorators(RoleType.ADMIN)
   @ApiBearerAuth()
   async getUsers(
     @Query() query: UserFilterDto,
@@ -91,7 +91,7 @@ export class UserController extends BaseController {
     @Param('id') id: number,
     @AuthUser() userLogin: UserEntity,
   ): Promise<IResponse<UserGetSerialization>> {
-    if (userLogin.id !== id && userLogin.role !== RoleType.SUPERADMIN) {
+    if (userLogin.id !== id && userLogin.role !== RoleType.ADMIN) {
       throw new UnauthorizedException(
         'You are not authorized to access this resource',
       );
@@ -128,7 +128,7 @@ export class UserController extends BaseController {
     @Body() dto: UpdateUserDto,
     @AuthUser() userLogin: UserEntity,
   ): Promise<IResponse<void>> {
-    if (userLogin.id !== id && userLogin.role !== RoleType.SUPERADMIN) {
+    if (userLogin.id !== id && userLogin.role !== RoleType.ADMIN) {
       throw new UnauthorizedException(
         'You are not authorized to access this resource',
       );
@@ -153,7 +153,7 @@ export class UserController extends BaseController {
     statusCode: HttpStatus.NOT_FOUND,
   })
   @UseGuards(JwtAuthGuard, RolesTypeGuard)
-  @RolesTypeDecorators(RoleType.SUPERADMIN)
+  @RolesTypeDecorators(RoleType.ADMIN)
   @ApiBearerAuth()
   @Transactional()
   async deleteUsersById(@Param('id') id: number): Promise<IResponse<void>> {

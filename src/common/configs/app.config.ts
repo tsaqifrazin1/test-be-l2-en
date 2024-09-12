@@ -6,12 +6,12 @@ interface IAppConfig {
   nodeEnv: string;
   port: number;
   secretKey: string;
-  databaseHost: string;
-  databasePort: number;
-  databaseUsername: string;
-  databasePassword: string;
-  databaseDb: string;
-  databaseLogging: boolean;
+  postgresHost: string;
+  postgresPort: number;
+  postgresUsername: string;
+  postgresPassword: string;
+  postgresDb: string;
+  postgresLogging: boolean;
 }
 
 export default registerAs('my-app-config-namespace', (): IAppConfig => {
@@ -44,52 +44,52 @@ export default registerAs('my-app-config-namespace', (): IAppConfig => {
         'any.required': 'SECRET_KEY is required',
       }),
     },
-    databaseHost: {
-      value: process.env.DATABASE_HOST,
+    postgresHost: {
+      value: process.env.POSTGRES_HOST,
       joi: Joi.string().required().messages({
-        'string.base': 'DATABASE_HOST must be a string',
-        'string.empty': 'DATABASE_HOST is required',
-        'any.required': 'DATABASE_HOST is required',
+        'string.base': 'POSTGRES_HOST must be a string',
+        'string.empty': 'POSTGRES_HOST is required',
+        'any.required': 'POSTGRES_HOST is required',
       }),
     },
-    databasePort: {
-      value: parseInt(process.env.DATABASE_PORT, 10),
+    postgresPort: {
+      value: parseInt(process.env.POSTGRES_PORT, 10),
       joi: Joi.number().required().messages({
-        'number.base': 'DATABASE_PORT must be a number',
-        'number.empty': 'DATABASE_PORT is required',
-        'any.required': 'DATABASE_PORT is required',
+        'number.base': 'POSTGRES_PORT must be a number',
+        'number.empty': 'POSTGRES_PORT is required',
+        'any.required': 'POSTGRES_PORT is required',
       }),
     },
-    databaseUsername: {
-      value: process.env.DATABASE_USERNAME,
+    postgresUsername: {
+      value: process.env.POSTGRES_USERNAME,
       joi: Joi.string().required().messages({
-        'string.base': 'DATABASE_USERNAME must be a string',
-        'string.empty': 'DATABASE_USERNAME is required',
-        'any.required': 'DATABASE_USERNAME is required',
+        'string.base': 'POSTGRES_USERNAME must be a string',
+        'string.empty': 'POSTGRES_USERNAME is required',
+        'any.required': 'POSTGRES_USERNAME is required',
       }),
     },
-    databasePassword: {
-      value: process.env.DATABASE_PASSWORD,
+    postgresPassword: {
+      value: process.env.POSTGRES_PASSWORD,
       joi: Joi.string().required().messages({
-        'string.base': 'DATABASE_PASSWORD must be a string',
-        'string.empty': 'DATABASE_PASSWORD is required',
-        'any.required': 'DATABASE_PASSWORD is required',
+        'string.base': 'POSTGRES_PASSWORD must be a string',
+        'string.empty': 'POSTGRES_PASSWORD is required',
+        'any.required': 'POSTGRES_PASSWORD is required',
       }),
     },
-    databaseDb: {
-      value: process.env.DATABASE_DB,
+    postgresDb: {
+      value: process.env.POSTGRES_DB,
       joi: Joi.string().required().messages({
-        'string.base': 'DATABASE_DB must be a string',
-        'string.empty': 'DATABASE_DB is required',
-        'any.required': 'DATABASE_DB is required',
+        'string.base': 'POSTGRES_DB must be a string',
+        'string.empty': 'POSTGRES_DB is required',
+        'any.required': 'POSTGRES_DB is required',
       }),
     },
-    databaseLogging: {
-      value: process.env.DATABASE_LOGGING === 'true',
+    postgresLogging: {
+      value: process.env.POSTGRES_LOGGING === 'true',
       joi: Joi.boolean().required().messages({
-        'boolean.base': 'DATABASE_LOGGING must be a boolean',
-        'boolean.empty': 'DATABASE_LOGGING is required',
-        'any.required': 'DATABASE_LOGGING is required',
+        'boolean.base': 'POSTGRES_LOGGING must be a boolean',
+        'boolean.empty': 'POSTGRES_LOGGING is required',
+        'any.required': 'POSTGRES_LOGGING is required',
       }),
     },
   };

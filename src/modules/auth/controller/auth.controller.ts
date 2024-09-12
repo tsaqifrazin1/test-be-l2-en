@@ -12,7 +12,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from '../service';
 import { CreateUserDto } from 'src/modules/user/dto';
 import { LoginDto } from '../dto';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { RolesTypeDecorators } from 'src/decorators/roles-type.decorator';
 import { RolesTypeGuard } from 'src/guards';
 import { JwtAuthGuard } from '../guard';
@@ -21,6 +21,7 @@ import { UseObjectInterceptors } from 'src/common/decorators/request';
 import { IdSerialization } from 'src/common/serialization';
 import { ApiBadRequest, ApiNotFound } from 'src/common/decorators/error';
 import { IResponse } from 'src/interceptors';
+import { RoleType } from 'src/common/type';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -42,15 +43,12 @@ export class AuthController {
   @ApiOperation({
     summary: 'Create User',
   })
-  //need to comment Guards and RolesDecorators to create first user
-  @UseGuards(JwtAuthGuard, RolesTypeGuard)
-  @RolesTypeDecorators()
-  @ApiBearerAuth()
+  //need to comment Guards and RolesDecorators to create Admin user
   async createUser(
     @Body() dto: CreateUserDto,
   ): Promise<IResponse<IdSerialization>> {
     const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash('123456789', salt);
+    const hash = await bcrypt.hash(dto.password, salt);
     dto.password = hash;
     const user = await this._userService.create(dto);
     return {
