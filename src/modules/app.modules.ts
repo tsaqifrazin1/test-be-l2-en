@@ -1,11 +1,13 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthModule } from '../auth';
 import configs from 'src/common/configs';
 import { SnakeNamingStrategy } from 'src/utils/strategies';
 import { DataSource } from 'typeorm';
 import { addTransactionalDataSource } from 'typeorm-transactional';
+import { AuthModule } from './auth';
+import { ProductCategoryModule } from './product_category';
+import { UserModule } from './user';
 
 @Module({
   imports: [
@@ -19,8 +21,8 @@ import { addTransactionalDataSource } from 'typeorm-transactional';
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
         schema: configService.get('POSTGRES_SCHEMA'),
-        entities: [__dirname + '/../../modules/**/*.entity{.ts,.js}'],
-        migrations: [__dirname + '/../../migrations/*{.ts,.js}'],
+        entities: [__dirname + '/../modules/**/*.entity{.ts,.js}'],
+        migrations: [__dirname + '/../migrations/*{.ts,.js}'],
         namingStrategy: new SnakeNamingStrategy(),
         logging: configService.get('POSTGRES_LOGGING') === 'true',
         logger: 'file',
@@ -34,7 +36,9 @@ import { addTransactionalDataSource } from 'typeorm-transactional';
         return addTransactionalDataSource(new DataSource(options));
       },
     }),
+    UserModule,
     AuthModule,
+    ProductCategoryModule
   ],
   controllers: [],
 })
