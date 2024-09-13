@@ -16,14 +16,8 @@ export class AuthService {
     return this.jwtService.signAsync(
       {
         id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
       },
       { secret: this.configService.get('SECRET_KEY') },
     );
-  }
-  async decodeUser(jwttoken: string): Promise<UserGetSerialization> {
-    return jwt.verify(jwttoken, this.configService.get('SECRET_KEY')) as UserGetSerialization;
   }
 }

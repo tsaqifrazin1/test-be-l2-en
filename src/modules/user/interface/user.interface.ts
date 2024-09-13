@@ -2,6 +2,7 @@ import { PaginationDto } from 'src/common/dto';
 import { UserRepository } from '../repository';
 import { UserEntity } from '../entitites';
 import { CreateUserDto, UpdateUserDto, UserFilterDto } from '../dto';
+import { LoginDto } from 'src/modules/auth/dto';
 
 /**
  * @description User Repository Token
@@ -52,6 +53,17 @@ export const UserServiceToken = Symbol('UserServiceToken');
  * @description User Service Interface
  */
 export interface IUserService {
+
+  /**
+   * @description Register User
+   */
+  registerUser(dto: CreateUserDto): Promise<UserEntity>;
+
+  /**
+   * @description Login User
+   */
+  loginUser(dto: LoginDto): Promise<UserEntity>;
+
   /**
    * @description Create User
    */

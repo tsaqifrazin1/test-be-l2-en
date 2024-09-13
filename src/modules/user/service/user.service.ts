@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import {
   IUserRepository,
   IUserService,
@@ -6,6 +6,8 @@ import {
 } from '../interface';
 import { CreateUserDto } from '../dto';
 import { UserEntity } from '../entitites';
+import * as bcrypt from 'bcryptjs';
+import { LoginDto } from 'src/modules/auth/dto';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -13,6 +15,25 @@ export class UserService implements IUserService {
     @Inject(UserRepositoryToken)
     private readonly userRepository: IUserRepository,
   ) {}
+
+  async registerUser(dto: CreateUserDto): Promise<UserEntity> {
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(dto.password, salt);
+    dto.password = hash;
+    const user = await this.create(dto);
+    return user;
+  }
+
+  async loginUser(dto: LoginDto){
+    const user = await this.getByEmail(dto.email);
+    if (!user) {
+      throw new NotFoundException('Invalid credentials');
+    }
+    if (!bcrypt.compareSync(dto.password, user.password)) {
+      throw new BadRequestException('invalid credentials');
+    }
+    return user;
+  }
 
   async create(dto: CreateUserDto): Promise<UserEntity> {
     return this.userRepository.create(dto);

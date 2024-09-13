@@ -5,7 +5,7 @@ import {
   HttpStatus,
   Inject,
   NotFoundException,
-  Post
+  Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import * as bcrypt from 'bcryptjs';
@@ -17,15 +17,20 @@ import { CreateUserDto } from 'src/modules/user/dto';
 import { IUserService, UserServiceToken } from 'src/modules/user/interface';
 import { LoginDto } from '../dto';
 import { AuthService } from '../service';
+import { BaseController } from 'src/common/base/base.controller';
+import { UserGetSerialization } from 'src/modules/user/serializations/user.serialization';
+import { LoginSerialization } from '../serialization/login.serialization';
 
 @Controller('auth')
 @ApiTags('Auth')
-export class AuthController {
+export class AuthController extends BaseController{
   constructor(
     private readonly _authService: AuthService,
     @Inject(UserServiceToken)
     private readonly _userService: IUserService,
-  ) {}
+  ) {
+    super();
+  }
 
   @Post('register')
   @UseObjectInterceptors(
@@ -38,14 +43,10 @@ export class AuthController {
   @ApiOperation({
     summary: 'Create User',
   })
-  //need to comment Guards and RolesDecorators to create Admin user
   async createUser(
     @Body() dto: CreateUserDto,
   ): Promise<IResponse<IdSerialization>> {
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(dto.password, salt);
-    dto.password = hash;
-    const user = await this._userService.create(dto);
+    const user = await this._userService.registerUser(dto);
     return {
       message: 'success create user',
       data: {
@@ -76,19 +77,12 @@ export class AuthController {
     statusCode: HttpStatus.BAD_REQUEST,
   })
   async login(@Body() dto: LoginDto): Promise<IResponse<any>> {
-    const user = await this._userService.getByEmail(dto.email);
-    if (!user) {
-      throw new NotFoundException('Invalid credentials');
-    }
-    if (!bcrypt.compareSync(dto.password, user.password)) {
-      throw new BadRequestException('invalid credentials');
-    }
-    const token = await this._authService.generateJwt(user);
-    const decode = await this._authService.decodeUser(token);
-    decode['token'] = token;
+    const loginUser = await this._userService.loginUser(dto);
+    const token = await this._authService.generateJwt(loginUser);
+    loginUser['token'] = token;
     return {
       message: 'success login',
-      data: decode,
+      data: this.transformObject(LoginSerialization, loginUser),
     };
   }
 }
