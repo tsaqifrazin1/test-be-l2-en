@@ -5,23 +5,18 @@ import {
   HttpStatus,
   Inject,
   NotFoundException,
-  Post,
-  UseGuards,
+  Post
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AuthService } from '../service';
-import { CreateUserDto } from 'src/modules/user/dto';
-import { LoginDto } from '../dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import * as bcrypt from 'bcryptjs';
-import { RolesTypeDecorators } from 'src/decorators/roles-type.decorator';
-import { RolesTypeGuard } from 'src/guards';
-import { JwtAuthGuard } from '../guard';
-import { IUserService, UserServiceToken } from 'src/modules/user/interface';
+import { ApiBadRequest, ApiNotFound } from 'src/common/decorators/error';
 import { UseObjectInterceptors } from 'src/common/decorators/request';
 import { IdSerialization } from 'src/common/serialization';
-import { ApiBadRequest, ApiNotFound } from 'src/common/decorators/error';
 import { IResponse } from 'src/interceptors';
-import { RoleType } from 'src/common/type';
+import { CreateUserDto } from 'src/modules/user/dto';
+import { IUserService, UserServiceToken } from 'src/modules/user/interface';
+import { LoginDto } from '../dto';
+import { AuthService } from '../service';
 
 @Controller('auth')
 @ApiTags('Auth')
