@@ -29,7 +29,7 @@ export class ProductEntity extends AbstractEntity {
   image: string;
 
   @Column()
-  @Check(`"harga" > 0`)
+  @Check(`"price" > 0`)
   price: number;
 
   @Column()
@@ -42,4 +42,13 @@ export class ProductEntity extends AbstractEntity {
   @ManyToOne(() => ProductCategoryEntity, (category) => category.products)
   @JoinColumn()
   category?: ProductCategoryEntity;
+}
+
+export const ProductEntityConstraintErrors = {
+  'FK_9a5f6868c96e0069e699f33e124': "Category not found",
+  'UQ_c44ac33a05b144dd0d9ddcf9327': "SKU already exists",
+  'UQ_4c9fb58de893725258746385e16': "Name already exists",
+  'CHK_d064358889508d02cc4c7acdce': "Price must be greater than 0",
+  'CHK_aea3ee263e1d44e36e5f5b5783': "Stock must be greater than or equal to 0",
+  'PK_0806c755e0aca124e67c0cf6d7d': "ID already exists",
 }

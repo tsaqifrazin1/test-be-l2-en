@@ -20,10 +20,35 @@ export class ProductRepository implements IProductRepository {
 
   async get(query: FilterProductDto): Promise<PaginationDto<ProductEntity>> {
     const queryBuilder = this.productRepository.createQueryBuilder('product');
+    queryBuilder.leftJoinAndSelect('product.category', 'category');
 
     if (query.name) {
       queryBuilder.andWhere('product.name LIKE :name', {
         name: `%${query.name}%`,
+      });
+    }
+
+    if (query.sku) {
+      queryBuilder.andWhere('product.sku LIKE :sku', {
+        sku: `%${query.sku}%`,
+      });
+    }
+
+    if (query.priceMin) {
+      queryBuilder.andWhere('product.price >= :priceMin', {
+        priceMin: query.priceMin,
+      });
+    }
+
+    if (query.priceMax) {
+      queryBuilder.andWhere('product.price <= :priceMax', {
+        priceMax: query.priceMax,
+      });
+    }
+
+    if (query.category) {
+      queryBuilder.andWhere('product.category = :category', {
+        category: query.category,
       });
     }
 

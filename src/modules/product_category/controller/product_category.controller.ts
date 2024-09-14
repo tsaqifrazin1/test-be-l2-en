@@ -34,6 +34,7 @@ import {
 import { ProductCategorySerialization } from '../serialization/product_category.serialization';
 import { RolesTypeGuard } from 'src/guards';
 import { RolesTypeDecorators } from 'src/decorators';
+import { RoleType } from 'src/common/type';
 
 @Controller('product-categories')
 @ApiTags('ProductCategory')
@@ -58,8 +59,7 @@ export class ProductCategoryController extends BaseController {
     summary: 'Create ProductCategory',
   })
   @UseGuards(JwtAuthGuard, RolesTypeGuard)
-  @RolesTypeDecorators('ADMIN')
-  
+  @RolesTypeDecorators(RoleType.ADMIN)
   async createProductCategory(
     @Body() dto: CreateProductCategoryDto,
   ): Promise<IResponse<IdSerialization>> {
@@ -84,7 +84,7 @@ export class ProductCategoryController extends BaseController {
     summary: 'Get ProductCategory',
   })
   @UseGuards(JwtAuthGuard, RolesTypeGuard)
-  @RolesTypeDecorators('ADMIN')
+  @RolesTypeDecorators(RoleType.ADMIN)
   async getProductCategories(
     @Query() query: FilterProductCategoryDto,
   ): Promise<IResponse<PaginationData<ProductCategorySerialization>>> {
@@ -118,7 +118,7 @@ export class ProductCategoryController extends BaseController {
     statusCode: HttpStatus.NOT_FOUND,
   })
   @UseGuards(JwtAuthGuard, RolesTypeGuard)
-  @RolesTypeDecorators('ADMIN')
+  @RolesTypeDecorators(RoleType.ADMIN)
   async getProductCategoryById(
     @Param('id') id: number,
   ): Promise<IResponse<ProductCategorySerialization>> {
@@ -149,7 +149,7 @@ export class ProductCategoryController extends BaseController {
     statusCode: HttpStatus.NOT_FOUND,
   })
   @UseGuards(JwtAuthGuard, RolesTypeGuard)
-  @RolesTypeDecorators('ADMIN')
+  @RolesTypeDecorators(RoleType.ADMIN)
   async updateProductCategoryById(
     @Param('id') id: number,
     @Body() dto: UpdateProductCategoryDto,
@@ -174,7 +174,7 @@ export class ProductCategoryController extends BaseController {
     statusCode: HttpStatus.NOT_FOUND,
   })
   @UseGuards(JwtAuthGuard, RolesTypeGuard)
-  @RolesTypeDecorators('ADMIN')
+  @RolesTypeDecorators(RoleType.ADMIN)
   async deleteProductCategoryById(@Param('id') id: number): Promise<IResponse<void>> {
     await this._product_categoryService.delete(id);
     return {

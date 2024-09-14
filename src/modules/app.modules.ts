@@ -8,6 +8,7 @@ import { addTransactionalDataSource } from 'typeorm-transactional';
 import { AuthModule } from './auth';
 import { ProductCategoryModule } from './product_category';
 import { UserModule } from './user';
+import { ProductModule } from './product';
 
 @Module({
   imports: [
@@ -38,7 +39,8 @@ import { UserModule } from './user';
     }),
     UserModule,
     AuthModule,
-    ProductCategoryModule
+    ProductCategoryModule,
+    ProductModule,
   ],
   controllers: [],
 })

@@ -26,11 +26,13 @@ import { JwtAuthGuard } from 'src/modules/auth/guard';
 import { CreateProductDto, FilterProductDto, UpdateProductDto } from '../dto';
 import { IProductService, ProductServiceToken } from '../interface';
 import { ProductSerialization } from '../serialization/product.serialization';
+import { RolesTypeGuard } from 'src/guards';
+import { RolesTypeDecorators } from 'src/decorators';
+import { RoleType } from 'src/common/type';
 
 @Controller('products')
 @ApiTags('Product')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
 export class ProductController extends BaseController {
   constructor(
     @Inject(ProductServiceToken)
@@ -50,6 +52,8 @@ export class ProductController extends BaseController {
   @ApiOperation({
     summary: 'Create Product',
   })
+  @UseGuards(JwtAuthGuard, RolesTypeGuard)
+  @RolesTypeDecorators(RoleType.ADMIN)
   async createProduct(
     @Body() dto: CreateProductDto,
   ): Promise<IResponse<IdSerialization>> {
@@ -73,6 +77,7 @@ export class ProductController extends BaseController {
   @ApiOperation({
     summary: 'Get Product',
   })
+  @UseGuards(JwtAuthGuard)
   async getProducts(
     @Query() query: FilterProductDto,
   ): Promise<IResponse<PaginationData<ProductSerialization>>> {
@@ -102,6 +107,7 @@ export class ProductController extends BaseController {
     description: 'Product not found',
     statusCode: HttpStatus.NOT_FOUND,
   })
+  @UseGuards(JwtAuthGuard)
   async getProductById(
     @Param('id') id: number,
   ): Promise<IResponse<ProductSerialization>> {
@@ -128,6 +134,8 @@ export class ProductController extends BaseController {
     description: 'Product not found',
     statusCode: HttpStatus.NOT_FOUND,
   })
+  @UseGuards(JwtAuthGuard, RolesTypeGuard)
+  @RolesTypeDecorators(RoleType.ADMIN)
   async updateProductById(
     @Param('id') id: number,
     @Body() dto: UpdateProductDto,
@@ -151,6 +159,8 @@ export class ProductController extends BaseController {
     description: 'Product not found',
     statusCode: HttpStatus.NOT_FOUND,
   })
+  @UseGuards(JwtAuthGuard, RolesTypeGuard)
+  @RolesTypeDecorators(RoleType.ADMIN)
   async deleteProductById(@Param('id') id: number): Promise<IResponse<void>> {
     await this._productService.delete(id);
     return {
@@ -171,6 +181,8 @@ export class ProductController extends BaseController {
     description: 'Product not found',
     statusCode: HttpStatus.NOT_FOUND,
   })
+  @UseGuards(JwtAuthGuard, RolesTypeGuard)
+  @RolesTypeDecorators(RoleType.ADMIN)
   async addStock(
     @Param('id') id: number,
     @Body('stock', new ParseIntPipe()) stock: number,
@@ -194,6 +206,8 @@ export class ProductController extends BaseController {
     description: 'Product not found',
     statusCode: HttpStatus.NOT_FOUND,
   })
+  @UseGuards(JwtAuthGuard, RolesTypeGuard)
+  @RolesTypeDecorators(RoleType.ADMIN)
   async reduceStock(
     @Param('id') id: number,
     @Body('stock', new ParseIntPipe()) stock: number,
