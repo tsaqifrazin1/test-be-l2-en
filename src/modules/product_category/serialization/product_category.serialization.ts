@@ -20,5 +20,5 @@ export class ProductCategorySerialization {
   updatedAt: Date;
 
   @Exclude()
-  deletedAt: Date;
+  deletedAt?: Date;
 }

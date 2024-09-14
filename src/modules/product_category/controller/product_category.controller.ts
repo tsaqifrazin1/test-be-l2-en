@@ -85,7 +85,7 @@ export class ProductCategoryController extends BaseController {
   })
   @UseGuards(JwtAuthGuard, RolesTypeGuard)
   @RolesTypeDecorators('ADMIN')
-  async getCompanies(
+  async getProductCategories(
     @Query() query: FilterProductCategoryDto,
   ): Promise<IResponse<PaginationData<ProductCategorySerialization>>> {
     const companies = await this._product_categoryService.get(query);
@@ -119,7 +119,7 @@ export class ProductCategoryController extends BaseController {
   })
   @UseGuards(JwtAuthGuard, RolesTypeGuard)
   @RolesTypeDecorators('ADMIN')
-  async getCompaniesById(
+  async getProductCategoryById(
     @Param('id') id: number,
   ): Promise<IResponse<ProductCategorySerialization>> {
     const product_category = await this._product_categoryService.getById(id);
@@ -150,7 +150,7 @@ export class ProductCategoryController extends BaseController {
   })
   @UseGuards(JwtAuthGuard, RolesTypeGuard)
   @RolesTypeDecorators('ADMIN')
-  async updateCompaniesById(
+  async updateProductCategoryById(
     @Param('id') id: number,
     @Body() dto: UpdateProductCategoryDto,
   ): Promise<IResponse<void>> {
@@ -175,7 +175,7 @@ export class ProductCategoryController extends BaseController {
   })
   @UseGuards(JwtAuthGuard, RolesTypeGuard)
   @RolesTypeDecorators('ADMIN')
-  async deleteCompaniesById(@Param('id') id: number): Promise<IResponse<void>> {
+  async deleteProductCategoryById(@Param('id') id: number): Promise<IResponse<void>> {
     await this._product_categoryService.delete(id);
     return {
       message: 'success delete product_category',

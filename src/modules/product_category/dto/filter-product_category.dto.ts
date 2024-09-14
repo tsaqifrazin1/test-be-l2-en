@@ -6,5 +6,5 @@ export class FilterProductCategoryDto extends QueryParams {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  name: string;
+  name?: string;
 }
