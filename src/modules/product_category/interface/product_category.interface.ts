@@ -27,6 +27,11 @@ export interface IProductCategoryRepository {
   getById(id: number): Promise<ProductCategoryEntity>;
 
   /**
+   * @description Get ProductCategory by Name from Database
+   */
+  getByName(name: string): Promise<ProductCategoryEntity>;
+
+  /**
    * @description Update ProductCategory in Database
    */
   update(id: number, dto: UpdateProductCategoryDto): Promise<void>;

@@ -18,7 +18,4 @@ export class ProductCategorySerialization {
   @ApiProperty()
   @Expose()
   updatedAt: Date;
-
-  @Exclude()
-  deletedAt?: Date;
 }

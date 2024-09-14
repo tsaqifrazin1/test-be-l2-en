@@ -1,21 +1,14 @@
 import { Module } from '@nestjs/common';
-import { JwtAuthGuard, JwtOrAnonymousAuthGuard } from './guard';
-import { AnonymousStrategy, JwtStrategy } from './strategy';
-import { AuthController } from './controller';
-import { AuthService } from './service';
-import { UserModule } from '../user';
 import { JwtService } from '@nestjs/jwt';
+import { UserModule } from '../user';
+import { AuthController } from './controller';
+import { JwtAuthGuard } from './guard';
+import { AuthService } from './service';
+import { JwtStrategy } from './strategy';
 
 @Module({
   imports: [UserModule],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    JwtService,
-    JwtAuthGuard,
-    JwtStrategy,
-    JwtOrAnonymousAuthGuard,
-    AnonymousStrategy,
-  ],
+  providers: [AuthService, JwtService, JwtAuthGuard, JwtStrategy],
 })
 export class AuthModule {}

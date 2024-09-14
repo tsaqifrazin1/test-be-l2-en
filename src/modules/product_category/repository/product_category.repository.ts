@@ -56,6 +56,13 @@ export class ProductCategoryRepository implements IProductCategoryRepository {
     return queryBuilder.getOne();
   }
 
+  async getByName(name: string): Promise<ProductCategoryEntity> {
+    const queryBuilder = this.product_categoryRepository.createQueryBuilder('product_category');
+    queryBuilder.where('product_category.name = :name', { name });
+
+    return queryBuilder.getOne();
+  }
+
   async update(id: number, dto: UpdateProductCategoryDto): Promise<void> {
     await this.product_categoryRepository.update(id, dto);
   }
