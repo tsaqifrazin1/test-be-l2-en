@@ -87,7 +87,7 @@ export class UserController extends BaseController {
   @ApiUnauthorized('You are not authorized to access this resource')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  async getUsersById(
+  async getUserById(
     @Param('id') id: number,
     @AuthUser() userLogin: UserEntity,
   ): Promise<IResponse<UserGetSerialization>> {
@@ -122,8 +122,7 @@ export class UserController extends BaseController {
   @ApiUnauthorized('You are not authorized to access this resource')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @Transactional()
-  async updateUsersById(
+  async updateUserById(
     @Param('id') id: number,
     @Body() dto: UpdateUserDto,
     @AuthUser() userLogin: UserEntity,
@@ -155,8 +154,7 @@ export class UserController extends BaseController {
   @UseGuards(JwtAuthGuard, RolesTypeGuard)
   @RolesTypeDecorators(RoleType.ADMIN)
   @ApiBearerAuth()
-  @Transactional()
-  async deleteUsersById(@Param('id') id: number): Promise<IResponse<void>> {
+  async deleteUserById(@Param('id') id: number): Promise<IResponse<void>> {
     await this.userService.delete(id);
     return {
       message: 'success',

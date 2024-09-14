@@ -17,6 +17,11 @@ export class UserService implements IUserService {
   ) {}
 
   async registerUser(dto: CreateUserDto): Promise<UserEntity> {
+    const checkUser = await this.getByEmail(dto.email);
+    if (checkUser) {
+      throw new BadRequestException('Email already exists');
+    }
+
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(dto.password, salt);
     dto.password = hash;
@@ -30,7 +35,7 @@ export class UserService implements IUserService {
       throw new NotFoundException('Invalid credentials');
     }
     if (!bcrypt.compareSync(dto.password, user.password)) {
-      throw new BadRequestException('invalid credentials');
+      throw new BadRequestException('Invalid credentials');
     }
     return user;
   }
@@ -55,6 +60,13 @@ export class UserService implements IUserService {
     const user = await this.userRepository.getById(id);
     if (!user) {
       throw new NotFoundException('User not found');
+    }
+
+    if(dto.email){
+      const checkUser = await this.getByEmail(dto.email);
+      if (checkUser && checkUser.id !== id) {
+        throw new BadRequestException('Email already exists');
+      }
     }
     return this.userRepository.update(id, dto);
   }
