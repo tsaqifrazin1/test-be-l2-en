@@ -37,13 +37,30 @@ jobs:
       continue-on-error: false
 
     - name: Build Docker image
-      run: docker build -t tsaqifrazinn/klontong-app:${{ github.sha }} .
+      run: docker compose build
 
     - name: Log in to Docker Hub
       run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
     - name: Push Docker image
-      run: docker push tsaqifrazinn/klontong-app:${{ github.sha }}
+      run: docker compose push
+
+    - name: Create .env file
+      run: |
+        echo "PORT=${{ env.PORT }}" > .env
+        echo "NODE_ENV=${{ env.NODE_ENV }}" >> .env
+        echo "SECRET_KEY=${{ env.SECRET_KEY }}" >> .env
+        echo "POSTGRES_HOST=${{ env.POSTGRES_HOST }}" >> .env
+        echo "POSTGRES_PORT=${{ env.POSTGRES_PORT }}" >> .env
+        echo "POSTGRES_USERNAME=${{ env.POSTGRES_USERNAME }}" >> .env
+        echo "POSTGRES_PASSWORD=${{ env.POSTGRES_PASSWORD }}" >> .env
+        echo "POSTGRES_DB=${{ env.POSTGRES_DB }}" >> .env
+        echo "POSTGRES_LOGGING=${{ env.POSTGRES_LOGGING }}" >> .env
+        echo "POSTGRES_HOST_MIGRATION=${{ env.POSTGRES_HOST_MIGRATION }}" >> .env
+        echo "POSTGRES_PORT_MIGRATION=${{ env.POSTGRES_PORT_MIGRATION }}" >> .env
+        echo "ADMIN_EMAIL=${{ env.ADMIN_EMAIL }}" >> .env
+        echo "ADMIN_PASSWORD=${{ env.ADMIN_PASSWORD }}" >> .env
+        echo "AZURE_STORAGE_CONNECTION_STRING=${{ env.AZURE_STORAGE_CONNECTION_STRING }}" >> .env
 
     - name: Add SSH key
       uses: webfactory/ssh-agent@v0.9.0
@@ -52,9 +69,9 @@ jobs:
 
     - name: Deploy to production server
       run: |
+        scp -r docker-compose.yaml ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/klontong 
         ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
-          docker pull tsaqifrazinn/klontong-app:${{ github.sha }}
-          docker stop klontong-app || true
-          docker rm klontong-app || true
-          docker run -d -p 3000:3000 --name klontong-app tsaqifrazinn/klontong-app:${{ github.sha }}
+          cd ~/klontong
+          docker compose pull
+          docker compose up --build -d
         EOF
