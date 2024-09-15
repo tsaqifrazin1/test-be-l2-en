@@ -36,10 +36,13 @@ jobs:
         continue-on-error: false
 
       - name: Build Docker image
-        run: docker compose build
+        run: docker build -t tsaqifrazinn/klontong-app:${{ github.sha }} .
 
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+
+      - name: Push Docker image
+        run: docker push tsaqifrazinn/klontong-app:${{ github.sha }}
 
       - name: Create .env file
         run: |
@@ -59,9 +62,6 @@ jobs:
           echo "AZURE_STORAGE_CONNECTION_STRING=${{ vars.AZURE_STORAGE_CONNECTION_STRING }}" >> .env
           cat ${{ vars.NODE_ENV }}
 
-      - name: Push Docker image
-        run: docker compose push
-
       - name: Add SSH key
         uses: webfactory/ssh-agent@v0.9.0
         with:
@@ -74,9 +74,8 @@ jobs:
 
       - name: Deploy to production server
         run: |
-          scp -r docker-compose.yaml .env Dockerfile package.json ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/klontong 
+          scp -r . ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/klontong 
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
             cd ~/klontong
-            docker compose pull
             docker compose up --build -d
           EOF
