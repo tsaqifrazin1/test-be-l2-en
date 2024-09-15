@@ -13,7 +13,7 @@ export interface IOrderItemRepository {
   /**
    * @description Create OrderItem to Database
    */
-  create(dto: CreateOrderItemDto): Promise<OrderItemEntity>;
+  create(dto: CreateOrderItemDto, performedBy?: string): Promise<OrderItemEntity>;
 
   /**
    * @description Get OrderItem by Id from Database
@@ -28,12 +28,12 @@ export interface IOrderItemRepository {
   /**
    * @description Update OrderItem in Database
    */
-  update(id: number, dto: UpdateOrderItemDto): Promise<void>;
+  update(id: number, dto: UpdateOrderItemDto, performedBy?: string): Promise<void>;
 
   /**
    * @description Soft Delete OrderItem from Database
    */
-  delete(id: number): Promise<void>;
+  delete(id: number, performedBy?: string): Promise<void>;
 }
 
 /**
@@ -48,7 +48,7 @@ export interface IOrderItemService {
   /**
    * @description Create OrderItem
    */
-  create(dto: CreateOrderItemDto): Promise<OrderItemEntity>;
+  create(dto: CreateOrderItemDto,performedBy?: string): Promise<OrderItemEntity>;
 
   /**
    * @description Get OrderItem by Id
@@ -63,10 +63,10 @@ export interface IOrderItemService {
   /**
    * @description Update OrderItem
    */
-  update(id: number, dto: UpdateOrderItemDto): Promise<void>;
+  update(id: number, dto: UpdateOrderItemDto, performedBy?: string): Promise<void>;
 
   /**
    * @description Soft Delete OrderItem
    */
-  delete(id: number): Promise<void>;
+  delete(id: number, performedBy?: string): Promise<void>;
 }

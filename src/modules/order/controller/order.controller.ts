@@ -64,7 +64,7 @@ export class OrderController extends BaseController {
     @AuthUser() user: UserEntity,
   ): Promise<IResponse<IdSerialization>> {
     dto.customerId = user.id;
-    const order = await this._orderService.checkout(dto);
+    const order = await this._orderService.checkout(dto, user?.username ?? 'system');
     return {
       message: 'success create order',
       data: {
@@ -153,8 +153,9 @@ export class OrderController extends BaseController {
   async updateOrderById(
     @Param('id') id: number,
     @Body() dto: UpdateOrderDto,
+    @AuthUser() user?: UserEntity,
   ): Promise<IResponse<void>> {
-    await this._orderService.update(id, dto);
+    await this._orderService.update(id, dto, user?.username ?? 'system');
     return {
       message: 'success update order',
     };
@@ -178,8 +179,9 @@ export class OrderController extends BaseController {
   async updateOrderStatusById(
     @Param('id') id: number,
     @Body('status', new ParseEnumPipe(OrderStatus)) status: OrderStatus,
+    @AuthUser() user?: UserEntity,
   ): Promise<IResponse<void>> {
-    await this._orderService.updateStatus(id, status);
+    await this._orderService.updateStatus(id, status, user?.username ?? 'system');
     return {
       message: 'success update order status',
     };

@@ -15,8 +15,8 @@ export class ProductCategoryService implements IProductCategoryService {
     private readonly product_categoryRepository: IProductCategoryRepository,
   ) {}
 
-  async create(dto: CreateProductCategoryDto): Promise<ProductCategoryEntity> {
-    return this.product_categoryRepository.create(dto);
+  async create(dto: CreateProductCategoryDto, performedBy?: string): Promise<ProductCategoryEntity> {
+    return this.product_categoryRepository.create(dto, performedBy);
   }
 
   async get(query: FilterProductCategoryDto): Promise<PaginationDto<ProductCategoryEntity>> {
@@ -27,19 +27,19 @@ export class ProductCategoryService implements IProductCategoryService {
     return this.product_categoryRepository.getById(id);
   }
 
-  async update(id: number, dto: UpdateProductCategoryDto): Promise<void> {
+  async update(id: number, dto: UpdateProductCategoryDto, performedBy?: string): Promise<void> {
     const product_category = await this.product_categoryRepository.getById(id);
     if (!product_category) {
       throw new NotFoundException('ProductCategory not found');
     }
-    return this.product_categoryRepository.update(id, dto);
+    return this.product_categoryRepository.update(id, dto, performedBy);
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: number, performedBy?: string): Promise<void> {
     const product_category = await this.product_categoryRepository.getById(id);
     if (!product_category) {
       throw new NotFoundException('ProductCategory not found');
     }
-    return this.product_categoryRepository.delete(id);
+    return this.product_categoryRepository.delete(id, performedBy);
   }
 }

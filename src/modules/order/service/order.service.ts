@@ -38,31 +38,39 @@ export class OrderService implements IOrderService {
   ) {}
 
   @Transactional()
-  async checkout(dto: CheckoutDto): Promise<OrderEntity> {
+  async checkout(dto: CheckoutDto, performedBy: string): Promise<OrderEntity> {
     let totalPrice = 0;
-    const order = await this.orderRepository.create({
-      customerId: dto.customerId,
-      status: OrderStatus.PENDING,
-      customer: dto.customer,
-      totalPrice: totalPrice,
-    });
-    
+    const order = await this.orderRepository.create(
+      {
+        customerId: dto.customerId,
+        status: OrderStatus.PENDING,
+        customer: dto.customer,
+        totalPrice: totalPrice,
+      },
+      performedBy,
+    );
+
     let orderItems: OrderItemEntity[] = [];
     for (const product of dto.products) {
-      const checkProduct = await this.productService.getById(
-        product.productId,
-      );
+      const checkProduct = await this.productService.getById(product.productId);
       if (!checkProduct) {
         throw new NotFoundException('Product not found');
       }
-      const orderItem = await this.orderItemRepository.create({
-        orderId: order.id,
-        productId: product.productId,
-        price: checkProduct.price,
-        quantity: product.quantity,
-      });
+      const orderItem = await this.orderItemRepository.create(
+        {
+          orderId: order.id,
+          productId: product.productId,
+          price: checkProduct.price,
+          quantity: product.quantity,
+        },
+        performedBy,
+      );
 
-      await this.productService.reduceStock(product.productId, product.quantity);
+      await this.productService.reduceStock(
+        product.productId,
+        product.quantity,
+        performedBy,
+      );
       orderItems.push(orderItem);
     }
 
@@ -71,7 +79,11 @@ export class OrderService implements IOrderService {
       0,
     );
 
-    await this.orderRepository.update(order.id, { totalPrice: order.totalPrice });
+    await this.orderRepository.update(
+      order.id,
+      { totalPrice: order.totalPrice },
+      performedBy,
+    );
     order.totalPrice = totalPrice;
     return order;
   }
@@ -84,29 +96,41 @@ export class OrderService implements IOrderService {
     return this.orderRepository.getById(id);
   }
 
-  async update(id: number, dto: UpdateOrderDto): Promise<void> {
+  async update(
+    id: number,
+    dto: UpdateOrderDto,
+    performedBy?: string,
+  ): Promise<void> {
     const order = await this.orderRepository.getById(id);
     if (!order) {
       throw new NotFoundException('Order not found');
     }
-    return this.orderRepository.update(id, dto);
+    return this.orderRepository.update(id, dto, performedBy);
   }
 
   @Transactional()
-  async updateStatus(id: number, status: OrderStatus): Promise<void> {
+  async updateStatus(
+    id: number,
+    status: OrderStatus,
+    performedBy?: string,
+  ): Promise<void> {
     const order = await this.orderRepository.getById(id);
-    if(!order) {
+    if (!order) {
       throw new NotFoundException('Order not found');
     }
 
-    if(status === OrderStatus.CANCELED){
+    if (status === OrderStatus.CANCELED) {
       const orderItems = await this.orderItemRepository.getByOrderId(id);
-      for(const orderItem of orderItems){
+      for (const orderItem of orderItems) {
         const product = await this.productService.getById(orderItem.productId);
-        await this.productService.addStock(product.id, orderItem.quantity);
+        await this.productService.addStock(
+          product.id,
+          orderItem.quantity,
+          performedBy,
+        );
       }
     }
 
-    return this.orderRepository.update(id, { status });
+    return this.orderRepository.update(id, { status }, performedBy);
   }
 }

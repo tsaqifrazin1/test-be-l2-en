@@ -14,7 +14,7 @@ export interface IProductCategoryRepository {
   /**
    * @description Create ProductCategory to Database
    */
-  create(dto: CreateProductCategoryDto): Promise<ProductCategoryEntity>;
+  create(dto: CreateProductCategoryDto, performedBy?: string): Promise<ProductCategoryEntity>;
 
   /**
    * @description Get ProductCategory from Database with Pagination
@@ -34,12 +34,12 @@ export interface IProductCategoryRepository {
   /**
    * @description Update ProductCategory in Database
    */
-  update(id: number, dto: UpdateProductCategoryDto): Promise<void>;
+  update(id: number, dto: UpdateProductCategoryDto, performedBy?: string): Promise<void>;
 
   /**
    * @description Soft Delete ProductCategory from Database
    */
-  delete(id: number): Promise<void>;
+  delete(id: number, performedBy?: string): Promise<void>;
 }
 
 /**
@@ -54,12 +54,12 @@ export interface IProductCategoryService {
   /**
    * @description Create ProductCategory
    */
-  create(dto: CreateProductCategoryDto): Promise<ProductCategoryEntity>;
+  create(dto: CreateProductCategoryDto, performedBy?: string): Promise<ProductCategoryEntity>;
 
   /**
    * @description Get ProductCategory
    */
-  get(query: FilterProductCategoryDto): Promise<PaginationDto<ProductCategoryEntity>>;
+  get(query: FilterProductCategoryDto, performedBy?: string): Promise<PaginationDto<ProductCategoryEntity>>;
 
   /**
    * @description Get ProductCategory by Id
@@ -69,10 +69,10 @@ export interface IProductCategoryService {
   /**
    * @description Update ProductCategory
    */
-  update(id: number, dto: UpdateProductCategoryDto): Promise<void>;
+  update(id: number, dto: UpdateProductCategoryDto, performedBy?: string): Promise<void>;
 
   /**
    * @description Soft Delete ProductCategory
    */
-  delete(id: number): Promise<void>;
+  delete(id: number, performedBy?: string): Promise<void>;
 }

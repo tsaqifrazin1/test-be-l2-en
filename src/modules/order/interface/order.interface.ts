@@ -15,7 +15,7 @@ export interface IOrderRepository {
   /**
    * @description Create Order to Database
    */
-  create(dto: CreateOrderDto): Promise<OrderEntity>;
+  create(dto: CreateOrderDto, performedBy?: string): Promise<OrderEntity>;
 
   /**
    * @description Get Order from Database with Pagination
@@ -30,12 +30,12 @@ export interface IOrderRepository {
   /**
    * @description Update Order in Database
    */
-  update(id: number, dto: UpdateOrderDto): Promise<void>;
+  update(id: number, dto: UpdateOrderDto, performedBy?: string): Promise<void>;
 
   /**
    * @description Soft Delete Order from Database
    */
-  delete(id: number): Promise<void>;
+  delete(id: number, performedBy?: string): Promise<void>;
 }
 
 /**
@@ -50,7 +50,7 @@ export interface IOrderService {
   /**
    * @description Checkout Order
    */
-  checkout(dto: CreateOrderDto): Promise<OrderEntity>;
+  checkout(dto: CreateOrderDto, performedBy?: string): Promise<OrderEntity>;
 
   /**
    * @description Get Order
@@ -65,10 +65,10 @@ export interface IOrderService {
   /**
    * @description Update Order
    */
-  update(id: number, dto: UpdateOrderDto): Promise<void>;
+  update(id: number, dto: UpdateOrderDto, performedBy?: string): Promise<void>;
 
   /**
    * @description Update Order Status
    */
-  updateStatus(id: number, status: OrderStatus): Promise<void>;
+  updateStatus(id: number, status: OrderStatus, performedBy?: string): Promise<void>;
 }

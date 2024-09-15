@@ -29,7 +29,7 @@ export class ProductService implements IProductService {
     private readonly productCategoryRepository: IProductCategoryRepository,
   ) {}
 
-  async create(dto: CreateProductDto): Promise<ProductEntity> {
+  async create(dto: CreateProductDto, performedBy?: string): Promise<ProductEntity> {
     const checkProduct = await this.productRepository.getByName(dto.name);
     if (checkProduct) {
       throw new NotFoundException('Product already exists');
@@ -41,7 +41,7 @@ export class ProductService implements IProductService {
     if (!productCategory) {
       productCategory = await this.productCategoryRepository.create({
         name: dto.categoryName,
-      });
+      }, performedBy);
     }
 
     const sku = await this._generateSku();
@@ -50,7 +50,7 @@ export class ProductService implements IProductService {
       ...productDto,
       sku,
       categoryId: productCategory.id,
-    });
+    }, performedBy);
   }
 
   async get(query: FilterProductDto): Promise<PaginationDto<ProductEntity>> {
@@ -61,7 +61,7 @@ export class ProductService implements IProductService {
     return this.productRepository.getById(id);
   }
 
-  async update(id: number, dto: UpdateProductDto): Promise<void> {
+  async update(id: number, dto: UpdateProductDto, performedBy?: string): Promise<void> {
     const product = await this.productRepository.getById(id);
     if (!product) {
       throw new NotFoundException('Product not found');
@@ -86,26 +86,26 @@ export class ProductService implements IProductService {
       dto.categoryId = productCategory.id;
     }
 
-    return this.productRepository.update(id, dto);
+    return this.productRepository.update(id, dto, performedBy);
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: number, performedBy?: string): Promise<void> {
     const product = await this.productRepository.getById(id);
     if (!product) {
       throw new NotFoundException('Product not found');
     }
-    return this.productRepository.delete(id);
+    return this.productRepository.delete(id, performedBy);
   }
 
-  async addStock(id: number, stock: number): Promise<void> {
+  async addStock(id: number, stock: number, performedBy?: string): Promise<void> {
     const product = await this.productRepository.getById(id);
     if (!product) {
       throw new NotFoundException('Product not found');
     }
-    return this.productRepository.update(id, { stock: product.stock + stock });
+    return this.productRepository.update(id, { stock: product.stock + stock }, performedBy);
   }
 
-  async reduceStock(id: number, stock: number): Promise<void> {
+  async reduceStock(id: number, stock: number, performedBy?: string): Promise<void> {
     const product = await this.productRepository.getById(id);
     if (!product) {
       throw new NotFoundException('Product not found');
@@ -113,7 +113,7 @@ export class ProductService implements IProductService {
     if (product.stock < stock) {
       throw new NotFoundException('Stock not enough');
     }
-    return this.productRepository.update(id, { stock: product.stock - stock });
+    return this.productRepository.update(id, { stock: product.stock - stock }, performedBy);
   }
 
   private async _generateSku(): Promise<string> {

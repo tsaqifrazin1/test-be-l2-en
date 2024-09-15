@@ -10,6 +10,7 @@ import { ProductCategoryModule } from './product_category';
 import { UserModule } from './user';
 import { ProductModule } from './product';
 import { OrderModule } from './order';
+import { AuditLogModule } from './audit_log';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { OrderModule } from './order';
     ProductCategoryModule,
     ProductModule,
     OrderModule,
+    AuditLogModule
   ],
   controllers: [],
 })

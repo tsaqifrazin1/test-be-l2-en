@@ -5,33 +5,30 @@ import { Repository } from 'typeorm';
 import { CreateOrderDto, FilterOrderDto, UpdateOrderDto } from '../dto';
 import { OrderEntity } from '../entities';
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EntityCreatedEventDto, EntityUpdatedEventDto } from 'src/modules/audit_log/dto';
 
 @Injectable()
 export class OrderRepository implements IOrderRepository {
   constructor(
     @InjectRepository(OrderEntity)
     private readonly orderRepository: Repository<OrderEntity>,
+    private eventEmitter: EventEmitter2,
   ) {}
 
-  async create(dto: CreateOrderDto): Promise<OrderEntity> {
+  async create(dto: CreateOrderDto,performedBy?: string): Promise<OrderEntity> {
     const order = this.orderRepository.create(dto);
-    return this.orderRepository.save(order);
+    const result = await this.orderRepository.save(order);
+
+    this.eventEmitter.emit(
+      'order.created',
+      new EntityCreatedEventDto(result, performedBy, 'order', result.id),
+    );
+    return result;
   }
 
   async get(query: FilterOrderDto): Promise<PaginationDto<OrderEntity>> {
     const queryBuilder = this.orderRepository.createQueryBuilder('order');
-
-    if (query.name) {
-      queryBuilder.andWhere('order.name LIKE :name', {
-        name: `%${query.name}%`,
-      });
-    }
-
-    if (query.address) {
-      queryBuilder.andWhere('order.address LIKE :address', {
-        address: `%${query.address}%`,
-      });
-    }
 
     queryBuilder.take(query.take);
     if ((query.page - 1) * query.take) {
@@ -62,11 +59,21 @@ export class OrderRepository implements IOrderRepository {
     return queryBuilder.getOne();
   }
 
-  async update(id: number, dto: UpdateOrderDto): Promise<void> {
+  async update(id: number, dto: UpdateOrderDto, performedBy?: string): Promise<void> {
+    const oldData = await this.getById(id);
     await this.orderRepository.update(id, dto);
+    this.eventEmitter.emit(
+      'order.updated',
+      new EntityUpdatedEventDto(oldData, dto, performedBy, 'order', id),
+    );
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: number,performedBy?: string): Promise<void> {
+    const oldData = await this.getById(id);
     await this.orderRepository.softDelete(id);
+    this.eventEmitter.emit(
+      'order.deleted',
+      new EntityCreatedEventDto(oldData, performedBy, 'order', id),
+    );
   }
 }

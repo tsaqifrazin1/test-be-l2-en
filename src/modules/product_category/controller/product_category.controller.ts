@@ -33,8 +33,9 @@ import {
 } from '../interface';
 import { ProductCategorySerialization } from '../serialization/product_category.serialization';
 import { RolesTypeGuard } from 'src/guards';
-import { RolesTypeDecorators } from 'src/decorators';
+import { AuthUser, RolesTypeDecorators } from 'src/decorators';
 import { RoleType } from 'src/common/type';
+import { UserEntity } from 'src/modules/user/entitites';
 
 @Controller('product-categories')
 @ApiTags('ProductCategory')
@@ -62,8 +63,12 @@ export class ProductCategoryController extends BaseController {
   @RolesTypeDecorators(RoleType.ADMIN)
   async createProductCategory(
     @Body() dto: CreateProductCategoryDto,
+    @AuthUser() user?: UserEntity,
   ): Promise<IResponse<IdSerialization>> {
-    const product_category = await this._product_categoryService.create(dto);
+    const product_category = await this._product_categoryService.create(
+      dto,
+      user?.username ?? 'system',
+    );
     return {
       message: 'success create product_category',
       data: {
@@ -153,8 +158,13 @@ export class ProductCategoryController extends BaseController {
   async updateProductCategoryById(
     @Param('id') id: number,
     @Body() dto: UpdateProductCategoryDto,
+    @AuthUser() user?: UserEntity,
   ): Promise<IResponse<void>> {
-    await this._product_categoryService.update(id, dto);
+    await this._product_categoryService.update(
+      id,
+      dto,
+      user?.username ?? 'system',
+    );
     return {
       message: 'success update product_category',
     };
@@ -175,8 +185,11 @@ export class ProductCategoryController extends BaseController {
   })
   @UseGuards(JwtAuthGuard, RolesTypeGuard)
   @RolesTypeDecorators(RoleType.ADMIN)
-  async deleteProductCategoryById(@Param('id') id: number): Promise<IResponse<void>> {
-    await this._product_categoryService.delete(id);
+  async deleteProductCategoryById(
+    @Param('id') id: number,
+    @AuthUser() user?: UserEntity,
+  ): Promise<IResponse<void>> {
+    await this._product_categoryService.delete(id, user?.username ?? 'system');
     return {
       message: 'success delete product_category',
     };

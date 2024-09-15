@@ -14,7 +14,7 @@ export interface IProductRepository {
   /**
    * @description Create Product to Database
    */
-  create(dto: CreateProductDto): Promise<ProductEntity>;
+  create(dto: CreateProductDto,performedBy?: string): Promise<ProductEntity>;
 
   /**
    * @description Get Product Count from Database
@@ -39,12 +39,12 @@ export interface IProductRepository {
   /**
    * @description Update Product in Database
    */
-  update(id: number, dto: UpdateProductDto): Promise<void>;
+  update(id: number, dto: UpdateProductDto, performedBy?: string): Promise<void>;
 
   /**
    * @description Soft Delete Product from Database
    */
-  delete(id: number): Promise<void>;
+  delete(id: number, performedBy?: string): Promise<void>;
 }
 
 /**
@@ -59,7 +59,7 @@ export interface IProductService {
   /**
    * @description Create Product
    */
-  create(dto: CreateProductDto): Promise<ProductEntity>;
+  create(dto: CreateProductDto, performedBy?: string): Promise<ProductEntity>;
 
   /**
    * @description Get Product
@@ -74,20 +74,20 @@ export interface IProductService {
   /**
    * @description Update Product
    */
-  update(id: number, dto: UpdateProductDto): Promise<void>;
+  update(id: number, dto: UpdateProductDto, performedBy?: string): Promise<void>;
 
   /**
    * @description Soft Delete Product
    */
-  delete(id: number): Promise<void>;
+  delete(id: number, performedBy?: string): Promise<void>;
 
   /**
    * @description Add Stock
    */
-  addStock(id: number, stock: number): Promise<void>;
+  addStock(id: number, stock: number, performedBy?: string): Promise<void>;
 
   /**
    * @description Reduce Stock
    */
-  reduceStock(id: number, stock: number): Promise<void>;
+  reduceStock(id: number, stock: number, performedBy?: string): Promise<void>;
 }

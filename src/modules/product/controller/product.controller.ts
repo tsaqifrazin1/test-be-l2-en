@@ -27,8 +27,9 @@ import { CreateProductDto, FilterProductDto, UpdateProductDto } from '../dto';
 import { IProductService, ProductServiceToken } from '../interface';
 import { ProductSerialization } from '../serialization/product.serialization';
 import { RolesTypeGuard } from 'src/guards';
-import { RolesTypeDecorators } from 'src/decorators';
+import { AuthUser, RolesTypeDecorators } from 'src/decorators';
 import { RoleType } from 'src/common/type';
+import { UserEntity } from 'src/modules/user/entitites';
 
 @Controller('products')
 @ApiTags('Product')
@@ -56,8 +57,9 @@ export class ProductController extends BaseController {
   @RolesTypeDecorators(RoleType.ADMIN)
   async createProduct(
     @Body() dto: CreateProductDto,
+    @AuthUser() user?: UserEntity,
   ): Promise<IResponse<IdSerialization>> {
-    const product = await this._productService.create(dto);
+    const product = await this._productService.create(dto, user?.username ?? 'system');
     return {
       message: 'success create product',
       data: {
@@ -139,8 +141,9 @@ export class ProductController extends BaseController {
   async updateProductById(
     @Param('id') id: number,
     @Body() dto: UpdateProductDto,
+    @AuthUser() user?: UserEntity,
   ): Promise<IResponse<void>> {
-    await this._productService.update(id, dto);
+    await this._productService.update(id, dto, user?.username ?? 'system');
     return {
       message: 'success update product',
     };
@@ -161,8 +164,11 @@ export class ProductController extends BaseController {
   })
   @UseGuards(JwtAuthGuard, RolesTypeGuard)
   @RolesTypeDecorators(RoleType.ADMIN)
-  async deleteProductById(@Param('id') id: number): Promise<IResponse<void>> {
-    await this._productService.delete(id);
+  async deleteProductById(
+    @Param('id') id: number,
+    @AuthUser() user?: UserEntity,
+  ): Promise<IResponse<void>> {
+    await this._productService.delete(id, user?.username ?? 'system');
     return {
       message: 'success delete product',
     };
@@ -186,8 +192,9 @@ export class ProductController extends BaseController {
   async addStock(
     @Param('id') id: number,
     @Body('stock', new ParseIntPipe()) stock: number,
+    @AuthUser() user?: UserEntity,
   ): Promise<IResponse<void>> {
-    await this._productService.addStock(id, stock);
+    await this._productService.addStock(id, stock, user?.username ?? 'system');
     return {
       message: 'success add stock',
     };
@@ -211,8 +218,9 @@ export class ProductController extends BaseController {
   async reduceStock(
     @Param('id') id: number,
     @Body('stock', new ParseIntPipe()) stock: number,
+    @AuthUser() user?: UserEntity,
   ): Promise<IResponse<void>> {
-    await this._productService.reduceStock(id, stock);
+    await this._productService.reduceStock(id, stock, user?.username ?? 'system');
     return {
       message: 'success reduce stock',
     };

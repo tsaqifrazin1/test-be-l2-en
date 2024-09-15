@@ -5,17 +5,32 @@ import { Repository } from 'typeorm';
 import { CreateProductDto, FilterProductDto, UpdateProductDto } from '../dto';
 import { ProductEntity } from '../entities';
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import {
+  EntityCreatedEventDto,
+  EntityDeletedEventDto,
+  EntityUpdatedEventDto,
+} from 'src/modules/audit_log/dto';
 
 @Injectable()
 export class ProductRepository implements IProductRepository {
   constructor(
     @InjectRepository(ProductEntity)
     private readonly productRepository: Repository<ProductEntity>,
+    private eventEmitter: EventEmitter2,
   ) {}
 
-  async create(dto: CreateProductDto): Promise<ProductEntity> {
+  async create(
+    dto: CreateProductDto,
+    performedBy?: string,
+  ): Promise<ProductEntity> {
     const product = this.productRepository.create(dto);
-    return this.productRepository.save(product);
+    const res = await this.productRepository.save(product);
+    this.eventEmitter.emit(
+      '*.created',
+      new EntityCreatedEventDto(res, performedBy, 'product', res.id),
+    );
+    return res;
   }
 
   async get(query: FilterProductDto): Promise<PaginationDto<ProductEntity>> {
@@ -88,11 +103,25 @@ export class ProductRepository implements IProductRepository {
     return queryBuilder.getOne();
   }
 
-  async update(id: number, dto: UpdateProductDto): Promise<void> {
+  async update(
+    id: number,
+    dto: UpdateProductDto,
+    performedBy?: string,
+  ): Promise<void> {
+    const product = await this.getById(id);
+    this.eventEmitter.emit(
+      'product.updated',
+      new EntityUpdatedEventDto(product, dto, performedBy, 'product', id),
+    );
     await this.productRepository.update(id, dto);
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: number, performedBy?: string): Promise<void> {
+    const product = await this.getById(id);
+    this.eventEmitter.emit(
+      'product.deleted',
+      new EntityDeletedEventDto(product, performedBy, 'product', id),
+    );
     await this.productRepository.softDelete(id);
   }
 

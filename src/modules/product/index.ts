@@ -6,9 +6,14 @@ import { ProductRepositoryToken, ProductServiceToken } from './interface';
 import { ProductRepository } from './repository';
 import { ProductService } from './service';
 import { ProductCategoryModule } from '../product_category';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ProductEntity]), ProductCategoryModule],
+  imports: [
+    TypeOrmModule.forFeature([ProductEntity]),
+    ProductCategoryModule,
+    EventEmitterModule.forRoot({ wildcard: true }),
+  ],
   controllers: [ProductController],
   providers: [
     ProductService,
