@@ -13,65 +13,69 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20'
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install dependencies
+        run: npm install
 
+      - name: Coverage threshold check
+        run: |
+          COVERAGE_THRESHOLD=10
+          ACTUAL_COVERAGE=$(npx jest --coverage --silent | grep 'All files' | awk '{print $4}' | sed 's/%//')
+          echo "Coverage is:  $ACTUAL_COVERAGE%"
+          if (( $(echo "$ACTUAL_COVERAGE < $COVERAGE_THRESHOLD" | bc -l) )); then
+            echo "Coverage is below the threshold: $ACTUAL_COVERAGE%"
+            exit 1
+          fi
+        continue-on-error: false
 
-    - name: Coverage threshold check
-      run: |
-        COVERAGE_THRESHOLD=10
-        ACTUAL_COVERAGE=$(npx jest --coverage --silent | grep 'All files' | awk '{print $4}' | sed 's/%//')
-        echo "Coverage is:  $ACTUAL_COVERAGE%"
-        if (( $(echo "$ACTUAL_COVERAGE < $COVERAGE_THRESHOLD" | bc -l) )); then
-          echo "Coverage is below the threshold: $ACTUAL_COVERAGE%"
-          exit 1
-        fi
-      continue-on-error: false
+      - name: Build Docker image
+        run: docker compose build
 
-    - name: Build Docker image
-      run: docker compose build
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
-    - name: Log in to Docker Hub
-      run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+      - name: Create .env file
+        run: |
+          echo "PORT=${{ env.PORT }}" > .env
+          echo "NODE_ENV=${{ env.NODE_ENV }}" >> .env
+          echo "SECRET_KEY=${{ env.SECRET_KEY }}" >> .env
+          echo "POSTGRES_HOST=${{ env.POSTGRES_HOST }}" >> .env
+          echo "POSTGRES_PORT=${{ env.POSTGRES_PORT }}" >> .env
+          echo "POSTGRES_USERNAME=${{ env.POSTGRES_USERNAME }}" >> .env
+          echo "POSTGRES_PASSWORD=${{ env.POSTGRES_PASSWORD }}" >> .env
+          echo "POSTGRES_DB=${{ env.POSTGRES_DB }}" >> .env
+          echo "POSTGRES_LOGGING=${{ env.POSTGRES_LOGGING }}" >> .env
+          echo "POSTGRES_HOST_MIGRATION=${{ env.POSTGRES_HOST_MIGRATION }}" >> .env
+          echo "POSTGRES_PORT_MIGRATION=${{ env.POSTGRES_PORT_MIGRATION }}" >> .env
+          echo "ADMIN_EMAIL=${{ env.ADMIN_EMAIL }}" >> .env
+          echo "ADMIN_PASSWORD=${{ env.ADMIN_PASSWORD }}" >> .env
+          echo "AZURE_STORAGE_CONNECTION_STRING=${{ env.AZURE_STORAGE_CONNECTION_STRING }}" >> .env
 
-    - name: Create .env file
-      run: |
-        echo "PORT=${{ env.PORT }}" > .env
-        echo "NODE_ENV=${{ env.NODE_ENV }}" >> .env
-        echo "SECRET_KEY=${{ env.SECRET_KEY }}" >> .env
-        echo "POSTGRES_HOST=${{ env.POSTGRES_HOST }}" >> .env
-        echo "POSTGRES_PORT=${{ env.POSTGRES_PORT }}" >> .env
-        echo "POSTGRES_USERNAME=${{ env.POSTGRES_USERNAME }}" >> .env
-        echo "POSTGRES_PASSWORD=${{ env.POSTGRES_PASSWORD }}" >> .env
-        echo "POSTGRES_DB=${{ env.POSTGRES_DB }}" >> .env
-        echo "POSTGRES_LOGGING=${{ env.POSTGRES_LOGGING }}" >> .env
-        echo "POSTGRES_HOST_MIGRATION=${{ env.POSTGRES_HOST_MIGRATION }}" >> .env
-        echo "POSTGRES_PORT_MIGRATION=${{ env.POSTGRES_PORT_MIGRATION }}" >> .env
-        echo "ADMIN_EMAIL=${{ env.ADMIN_EMAIL }}" >> .env
-        echo "ADMIN_PASSWORD=${{ env.ADMIN_PASSWORD }}" >> .env
-        echo "AZURE_STORAGE_CONNECTION_STRING=${{ env.AZURE_STORAGE_CONNECTION_STRING }}" >> .env
+      - name: Push Docker image
+        run: docker compose push
 
-    - name: Push Docker image
-      run: docker compose push
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-    - name: Add SSH key
-      uses: webfactory/ssh-agent@v0.9.0
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Add remote host to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
-    - name: Deploy to production server
-      run: |
-        scp -r docker-compose.yaml -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/klontong 
-        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
-          cd ~/klontong
-          docker compose pull
-          docker compose up --build -d
-        EOF
+      - name: Deploy to production server
+        run: |
+          scp -r docker-compose.yaml -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/klontong 
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
+            cd ~/klontong
+            docker compose pull
+            docker compose up --build -d
+          EOF
