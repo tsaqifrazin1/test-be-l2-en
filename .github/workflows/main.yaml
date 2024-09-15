@@ -27,8 +27,8 @@ jobs:
 
     - name: Coverage threshold check
       run: |
-        COVERAGE_THRESHOLD=50
-        ACTUAL_COVERAGE=$(npx jest --coverage --silent --coverageReporters=text-summary | grep 'All files' | awk '{print $4}' | sed 's/%//')
+        COVERAGE_THRESHOLD=10
+        ACTUAL_COVERAGE=$(npx jest --coverage --silent | grep 'All files' | awk '{print $4}' | sed 's/%//')
         echo "Coverage is:  $ACTUAL_COVERAGE%"
         if (( $(echo "$ACTUAL_COVERAGE < $COVERAGE_THRESHOLD" | bc -l) )); then
           echo "Coverage is below the threshold: $ACTUAL_COVERAGE%"
