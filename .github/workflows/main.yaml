@@ -24,14 +24,12 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Run tests
-      run: npm run test
-      continue-on-error: false
 
     - name: Coverage threshold check
       run: |
         COVERAGE_THRESHOLD=50
         ACTUAL_COVERAGE=$(npx jest --coverage --silent --coverageReporters=text-summary | grep 'All files' | awk '{print $4}' | sed 's/%//')
+        echo "Coverage is:  $ACTUAL_COVERAGE%"
         if (( $(echo "$ACTUAL_COVERAGE < $COVERAGE_THRESHOLD" | bc -l) )); then
           echo "Coverage is below the threshold: $ACTUAL_COVERAGE%"
           exit 1
@@ -46,9 +44,17 @@ jobs:
 
     - name: Push Docker image
       run: docker push tsaqifrazinn/klontong-app:${{ github.sha }}
-      
-    - name: Deploy to production (Optional)
-      run: |
-        echo "Deploying to production server..."
-        ssh user@your-server "docker pull tsaqifrazinn/klontong-app:${{ github.sha }} && docker stop klontong-app && docker rm klontong-app && docker run -d -p 3000:3000 --name tsaqifrazinn/klontong-app:${{ github.sha }}"
 
+     - name: Add SSH key
+      uses: webfactory/ssh-agent@v0.8.1
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Deploy to production server
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
+          docker pull tsaqifrazinn/klontong-app:${{ github.sha }}
+          docker stop klontong-app || true
+          docker rm klontong-app || true
+          docker run -d -p 3000:3000 --name klontong-app tsaqifrazinn/klontong-app:${{ github.sha }}
+        EOF
