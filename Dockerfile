@@ -9,12 +9,9 @@ COPY package-lock.json ./
 RUN npm install
 
 COPY tsconfig.json ./
-RUN ls -la /app
 
 COPY src ./src
 RUN npm run build
-RUN npm run typeorm:db:create
-RUN npm run typeorm:run-migration
 
 EXPOSE 8010
 
