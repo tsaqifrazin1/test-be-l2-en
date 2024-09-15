@@ -25,7 +25,7 @@ jobs:
       run: npm install
 
     - name: Run tests
-      run: npm run test:cov
+      run: npm run test
       continue-on-error: false
 
     - name: Coverage threshold check
