@@ -73,7 +73,7 @@ jobs:
 
       - name: Deploy to production server
         run: |
-          scp -r docker-compose.yaml .env ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/klontong 
+          scp -r docker-compose.yaml .env Dockerfile ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/klontong 
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
             cd ~/klontong
             docker compose pull
