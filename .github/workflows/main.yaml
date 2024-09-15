@@ -44,38 +44,38 @@ jobs:
       - name: Push Docker image
         run: docker push tsaqifrazinn/klontong-app:${{ github.sha }}
 
-      - name: Create .env file
-        run: |
-          echo "PORT=${{ vars.PORT }}" > .env
-          echo "NODE_ENV=${{ vars.NODE_ENV }}" >> .env
-          echo "SECRET_KEY=${{ vars.SECRET_KEY }}" >> .env
-          echo "POSTGRES_HOST=${{ vars.POSTGRES_HOST }}" >> .env
-          echo "POSTGRES_PORT=${{ vars.POSTGRES_PORT }}" >> .env
-          echo "POSTGRES_USERNAME=${{ vars.POSTGRES_USERNAME }}" >> .env
-          echo "POSTGRES_PASSWORD=${{ vars.POSTGRES_PASSWORD }}" >> .env
-          echo "POSTGRES_DB=${{ vars.POSTGRES_DB }}" >> .env
-          echo "POSTGRES_LOGGING=${{ vars.POSTGRES_LOGGING }}" >> .env
-          echo "POSTGRES_HOST_MIGRATION=${{ vars.POSTGRES_HOST_MIGRATION }}" >> .env
-          echo "POSTGRES_PORT_MIGRATION=${{ vars.POSTGRES_PORT_MIGRATION }}" >> .env
-          echo "ADMIN_EMAIL=${{ vars.ADMIN_EMAIL }}" >> .env
-          echo "ADMIN_PASSWORD=${{ vars.ADMIN_PASSWORD }}" >> .env
-          echo "AZURE_STORAGE_CONNECTION_STRING=${{ vars.AZURE_STORAGE_CONNECTION_STRING }}" >> .env
-          cat ${{ vars.NODE_ENV }}
+      # - name: Create .env file
+      #   run: |
+      #     echo "PORT=${{ vars.PORT }}" > .env
+      #     echo "NODE_ENV=${{ vars.NODE_ENV }}" >> .env
+      #     echo "SECRET_KEY=${{ vars.SECRET_KEY }}" >> .env
+      #     echo "POSTGRES_HOST=${{ vars.POSTGRES_HOST }}" >> .env
+      #     echo "POSTGRES_PORT=${{ vars.POSTGRES_PORT }}" >> .env
+      #     echo "POSTGRES_USERNAME=${{ vars.POSTGRES_USERNAME }}" >> .env
+      #     echo "POSTGRES_PASSWORD=${{ vars.POSTGRES_PASSWORD }}" >> .env
+      #     echo "POSTGRES_DB=${{ vars.POSTGRES_DB }}" >> .env
+      #     echo "POSTGRES_LOGGING=${{ vars.POSTGRES_LOGGING }}" >> .env
+      #     echo "POSTGRES_HOST_MIGRATION=${{ vars.POSTGRES_HOST_MIGRATION }}" >> .env
+      #     echo "POSTGRES_PORT_MIGRATION=${{ vars.POSTGRES_PORT_MIGRATION }}" >> .env
+      #     echo "ADMIN_EMAIL=${{ vars.ADMIN_EMAIL }}" >> .env
+      #     echo "ADMIN_PASSWORD=${{ vars.ADMIN_PASSWORD }}" >> .env
+      #     echo "AZURE_STORAGE_CONNECTION_STRING=${{ vars.AZURE_STORAGE_CONNECTION_STRING }}" >> .env
+      #     cat ${{ vars.NODE_ENV }}
 
-      - name: Add SSH key
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      # - name: Add SSH key
+      #   uses: webfactory/ssh-agent@v0.9.0
+      #   with:
+      #     ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Add remote host to known_hosts
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+      # - name: Add remote host to known_hosts
+      #   run: |
+      #     mkdir -p ~/.ssh
+      #     ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy to production server
-        run: |
-          scp -r * ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/klontong 
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
-            cd ~/klontong
-            docker compose up --build -d
-          EOF
+      # - name: Deploy to production server
+      #   run: |
+      #     scp -r * ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/klontong 
+      #     ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
+      #       cd ~/klontong
+      #       docker compose up --build -d
+      #     EOF

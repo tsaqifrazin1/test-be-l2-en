@@ -2,12 +2,19 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
+RUN rm -rf /app/*
+COPY package.json ./
+
+COPY package-lock.json ./
 RUN npm install
 
-COPY . .
+COPY tsconfig.json ./
+RUN ls -la /app
 
+COPY src ./src
 RUN npm run build
 
-CMD ["npm", "run", "start"]
 EXPOSE 8010
+
+CMD ["node", "dist/main.js"]
+
