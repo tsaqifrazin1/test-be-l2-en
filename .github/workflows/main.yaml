@@ -42,9 +42,6 @@ jobs:
     - name: Log in to Docker Hub
       run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
-    - name: Push Docker image
-      run: docker compose push
-
     - name: Create .env file
       run: |
         echo "PORT=${{ env.PORT }}" > .env
@@ -61,6 +58,9 @@ jobs:
         echo "ADMIN_EMAIL=${{ env.ADMIN_EMAIL }}" >> .env
         echo "ADMIN_PASSWORD=${{ env.ADMIN_PASSWORD }}" >> .env
         echo "AZURE_STORAGE_CONNECTION_STRING=${{ env.AZURE_STORAGE_CONNECTION_STRING }}" >> .env
+
+    - name: Push Docker image
+      run: docker compose push
 
     - name: Add SSH key
       uses: webfactory/ssh-agent@v0.9.0
