@@ -1,7 +1,8 @@
 import { Exclude } from 'class-transformer';
 import { RoleType } from '../../../common/type';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { AbstractEntity } from 'src/common/abstract';
+import { OrderEntity } from 'src/modules/order/entities';
 
 @Entity({ name: 'users' })
 export class UserEntity extends AbstractEntity {
@@ -36,6 +37,9 @@ export class UserEntity extends AbstractEntity {
     enum: RoleType,
   })
   role: RoleType;
+
+  @OneToMany(() => OrderEntity, (order) => order.customer)
+  orders: OrderEntity[];
 }
 
 export const UserEntityConstraintErrors = {

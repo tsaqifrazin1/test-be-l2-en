@@ -9,6 +9,7 @@ import { AuthModule } from './auth';
 import { ProductCategoryModule } from './product_category';
 import { UserModule } from './user';
 import { ProductModule } from './product';
+import { OrderModule } from './order';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { ProductModule } from './product';
     AuthModule,
     ProductCategoryModule,
     ProductModule,
+    OrderModule,
   ],
   controllers: [],
 })

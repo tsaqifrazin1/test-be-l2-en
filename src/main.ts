@@ -14,7 +14,7 @@ import { BadRequestExceptionFilter } from './filter/exception-filter';
 import { QueryFailedFilter } from './filter/query-failed.filter';
 
 async function bootstrap() {
-  initializeTransactionalContext()
+  initializeTransactionalContext();
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true,
   });
@@ -26,7 +26,10 @@ async function bootstrap() {
   setupSwagger(app);
 
   const reflector = app.get(Reflector);
-  app.useGlobalFilters(new BadRequestExceptionFilter(), new QueryFailedFilter(reflector));
+  app.useGlobalFilters(
+    new BadRequestExceptionFilter(),
+    new QueryFailedFilter(reflector),
+  );
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
   app.useGlobalPipes(

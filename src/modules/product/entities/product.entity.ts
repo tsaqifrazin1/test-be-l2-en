@@ -1,6 +1,7 @@
 import { AbstractEntity } from 'src/common/abstract';
+import { OrderItemEntity } from 'src/modules/order-item/entities';
 import { ProductCategoryEntity } from 'src/modules/product_category/entities';
-import { Check, Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Check, Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity('products')
 export class ProductEntity extends AbstractEntity {
@@ -42,6 +43,9 @@ export class ProductEntity extends AbstractEntity {
   @ManyToOne(() => ProductCategoryEntity, (category) => category.products)
   @JoinColumn()
   category?: ProductCategoryEntity;
+
+  @OneToMany(() => OrderItemEntity, (orderItem) => orderItem.product)
+  orderItems?: OrderItemEntity[];
 }
 
 export const ProductEntityConstraintErrors = {
