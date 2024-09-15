@@ -45,7 +45,7 @@ jobs:
     - name: Push Docker image
       run: docker push tsaqifrazinn/klontong-app:${{ github.sha }}
 
-     - name: Add SSH key
+    - name: Add SSH key
       uses: webfactory/ssh-agent@v0.8.1
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
