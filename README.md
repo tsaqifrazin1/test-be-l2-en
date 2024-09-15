@@ -86,3 +86,70 @@ Don’t forget to set your GitHub repo to public and share it with us.
 Happy coding!
 
 Please submit your finished test to [bit.ly/4cWYsiX](https://bit.ly/4cWYsiX)
+
+## Project URL
+
+  `SWAGGER_URL=*http://20.5.110.156:8010/api/docs*`
+
+## Installation
+
+  - Clone GITHUB Repository
+    ```
+      git clone <URL-REPOSITORY>
+    ```
+  
+  - Install Dependencies
+    ```
+      npm install
+    ```
+  
+  - Create .env file <br>
+    fill all the variables
+    ```
+    PORT=
+    NODE_ENV=
+
+    SECRET_KEY=
+
+    POSTGRES_HOST=
+    POSTGRES_PORT=
+    POSTGRES_USERNAME=
+    POSTGRES_PASSWORD=
+    POSTGRES_DB=
+    POSTGRES_LOGGING=
+
+    POSTGRES_HOST_MIGRATION=
+    POSTGRES_PORT_MIGRATION=
+
+    ADMIN_EMAIL=
+    ADMIN_PASSWORD=
+
+    AZURE_STORAGE_CONNECTION_STRING=
+    ```
+
+    - `POSTGRES_HOST_MIGRATION` is use for migration, you can use -    `localhost` if the database running on same server
+    - `POSTGRES_PORT_MIGRATION` s use for migration, you can use -    `5432 (based on db container)` if the database running on same server
+    - `ADMIN_EMAIL` is use for generate first admin user email
+    - `ADMIN_PASSWORD` is use for generate first admin user password
+    - `AZURE_STORAGE_CONNECTION_STRING` for upload email to azure
+
+
+  - Run PostgreSQL Container
+    ```
+    docker pull postgres:13
+
+    docker run -p 5433:5432 --env-file ./.env -v pgdata:/var/lib/postgresql/data -d --name db postgres:13
+    ```
+  
+  - Create Database and run migrations
+    ```
+    npm run typeorm:db:create
+    npm run typeorm:run-migration
+    npm run typeorm:run-seed
+    ```
+  
+  - Run the APPS
+    ```
+    docker build -t klontong-app-image .
+    docker run -d -p 8010:8010 --link db:db --name klontong-app-container klontong-app-image
+    ```  
