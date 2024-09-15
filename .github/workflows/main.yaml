@@ -1,0 +1,54 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run tests
+      run: npm run test:cov
+      continue-on-error: false
+
+    - name: Coverage threshold check
+      run: |
+        COVERAGE_THRESHOLD=50
+        ACTUAL_COVERAGE=$(npx jest --coverage --silent --coverageReporters=text-summary | grep 'All files' | awk '{print $4}' | sed 's/%//')
+        if (( $(echo "$ACTUAL_COVERAGE < $COVERAGE_THRESHOLD" | bc -l) )); then
+          echo "Coverage is below the threshold: $ACTUAL_COVERAGE%"
+          exit 1
+        fi
+      continue-on-error: false
+
+    - name: Build Docker image
+      run: docker build -t tsaqifrazinn/klontong-app:${{ github.sha }} .
+
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+
+    - name: Push Docker image
+      run: docker push tsaqifrazinn/klontong-app:${{ github.sha }}
+      
+    - name: Deploy to production (Optional)
+      run: |
+        echo "Deploying to production server..."
+        ssh user@your-server "docker pull tsaqifrazinn/klontong-app:${{ github.sha }} && docker stop klontong-app && docker rm klontong-app && docker run -d -p 3000:3000 --name tsaqifrazinn/klontong-app:${{ github.sha }}"
+
