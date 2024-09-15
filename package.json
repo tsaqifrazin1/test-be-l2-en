@@ -27,6 +27,7 @@
     "typeorm:db:create": "ts-node -r tsconfig-paths/register ./node_modules/typeorm-extension/bin/cli.cjs db:create -d ./src/utils/ormconfig"
   },
   "dependencies": {
+    "@azure/storage-blob": "^12.24.0",
     "@faker-js/faker": "^8.0.2",
     "@json2csv/plainjs": "^7.0.3",
     "@nestjs/axios": "^3.0.0",

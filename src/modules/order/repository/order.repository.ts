@@ -29,6 +29,9 @@ export class OrderRepository implements IOrderRepository {
 
   async get(query: FilterOrderDto): Promise<PaginationDto<OrderEntity>> {
     const queryBuilder = this.orderRepository.createQueryBuilder('order');
+    queryBuilder.leftJoinAndSelect('order.customer', 'customer');
+    queryBuilder.leftJoinAndSelect('order.items', 'orderItems');
+    queryBuilder.leftJoinAndSelect('orderItems.product', 'product');
 
     queryBuilder.take(query.take);
     if ((query.page - 1) * query.take) {
@@ -54,6 +57,9 @@ export class OrderRepository implements IOrderRepository {
 
   async getById(id: number): Promise<OrderEntity> {
     const queryBuilder = this.orderRepository.createQueryBuilder('order');
+    queryBuilder.leftJoinAndSelect('order.customer', 'customer');
+    queryBuilder.leftJoinAndSelect('order.items', 'orderItems');
+    queryBuilder.leftJoinAndSelect('orderItems.product', 'product');
     queryBuilder.where('order.id = :id', { id });
 
     return queryBuilder.getOne();

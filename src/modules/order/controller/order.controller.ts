@@ -13,7 +13,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BaseController } from 'src/common/base/base.controller';
 import {
   UseObjectInterceptors,
@@ -64,7 +64,10 @@ export class OrderController extends BaseController {
     @AuthUser() user: UserEntity,
   ): Promise<IResponse<IdSerialization>> {
     dto.customerId = user.id;
-    const order = await this._orderService.checkout(dto, user?.username ?? 'system');
+    const order = await this._orderService.checkout(
+      dto,
+      user?.username ?? 'system',
+    );
     return {
       message: 'success create order',
       data: {
@@ -128,7 +131,7 @@ export class OrderController extends BaseController {
     if (order.customerId !== user.id) {
       throw new NotFoundException('Order not found');
     }
-    
+
     return {
       message: 'success',
       data: this.transformObject(OrderSerialization, order),
@@ -176,12 +179,27 @@ export class OrderController extends BaseController {
     description: 'Order not found',
     statusCode: HttpStatus.NOT_FOUND,
   })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        status: {
+          type: 'string',
+          enum: Object.values(OrderStatus),
+        },
+      },
+    },
+  })
   async updateOrderStatusById(
     @Param('id') id: number,
     @Body('status', new ParseEnumPipe(OrderStatus)) status: OrderStatus,
     @AuthUser() user?: UserEntity,
   ): Promise<IResponse<void>> {
-    await this._orderService.updateStatus(id, status, user?.username ?? 'system');
+    await this._orderService.updateStatus(
+      id,
+      status,
+      user?.username ?? 'system',
+    );
     return {
       message: 'success update order status',
     };

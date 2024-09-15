@@ -8,10 +8,16 @@ import {
 } from 'src/modules/product/interface';
 import { ProductSerialization } from 'src/modules/product/serialization/product.serialization';
 import { ProductCategorySerialization } from 'src/modules/product_category/serialization/product_category.serialization';
+import {
+  IUploadFileService,
+  UploadFileServiceToken,
+} from 'src/modules/upload_file/interface/upload_file.interface';
+import { UserEntity } from 'src/modules/user/entitites';
 
 describe('ProductController', () => {
   let controller: ProductController;
   let productService: IProductService;
+  let uploadFileService: IUploadFileService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -29,11 +35,18 @@ describe('ProductController', () => {
             reduceStock: jest.fn(),
           },
         },
+        {
+          provide: UploadFileServiceToken,
+          useValue: {
+            uploadFile: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
     controller = module.get<ProductController>(ProductController);
     productService = module.get<IProductService>(ProductServiceToken);
+    uploadFileService = module.get<IUploadFileService>(UploadFileServiceToken);
   });
 
   it('should be defined', () => {
@@ -282,24 +295,48 @@ describe('ProductController', () => {
   describe('addStock', () => {
     it('should add stock to product by id', async () => {
       const id = 1;
-      const stock = 10;
+      const dto = { stock: 10 };
 
       jest.spyOn(productService, 'addStock').mockResolvedValue(null);
 
-      await controller.addStock(id, stock);
-      expect(productService.addStock).toBeCalledWith(id, stock, 'system');
+      await controller.addStock(id, dto);
+      expect(productService.addStock).toBeCalledWith(id, dto.stock, 'system');
     });
   });
 
   describe('reduceStock', () => {
     it('should reduce stock to product by id', async () => {
       const id = 1;
-      const stock = 10;
+      const dto = { stock: 10 };
 
       jest.spyOn(productService, 'reduceStock').mockResolvedValue(null);
 
-      await controller.reduceStock(id, stock);
-      expect(productService.reduceStock).toBeCalledWith(id, stock, 'system');
+      await controller.reduceStock(id, dto);
+      expect(productService.reduceStock).toBeCalledWith(
+        id,
+        dto.stock,
+        'system',
+      );
+    });
+  });
+
+  describe('uploadImage', () => {
+    it('should upload image', async () => {
+      const id = 1;
+      const file = {
+        originalname: 'test',
+        buffer: Buffer.from('test'),
+      } as Express.Multer.File;
+
+      const user = { id: 1 } as UserEntity;
+
+      jest.spyOn(productService, 'update').mockResolvedValue(null);
+      jest.spyOn(uploadFileService, 'uploadFile').mockResolvedValue('test');
+
+      await controller.uploadFile(id, file, user);
+      expect(uploadFileService.uploadFile).toBeCalledWith(file, 1, {
+        containerName: 'product-image',
+      });
     });
   });
 });

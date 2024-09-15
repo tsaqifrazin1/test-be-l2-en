@@ -12,6 +12,7 @@ interface IAppConfig {
   postgresPassword: string;
   postgresDb: string;
   postgresLogging: boolean;
+  azureStorageConnectionString: string;
 }
 
 export default registerAs('my-app-config-namespace', (): IAppConfig => {
@@ -90,6 +91,14 @@ export default registerAs('my-app-config-namespace', (): IAppConfig => {
         'boolean.base': 'POSTGRES_LOGGING must be a boolean',
         'boolean.empty': 'POSTGRES_LOGGING is required',
         'any.required': 'POSTGRES_LOGGING is required',
+      }),
+    },
+    azureStorageConnectionString: {
+      value: process.env.AZURE_STORAGE_CONNECTION_STRING,
+      joi: Joi.string().required().messages({
+        'string.base': 'AZURE_STORAGE_CONNECTION_STRING must be a string',
+        'string.empty': 'AZURE_STORAGE_CONNECTION_STRING is required',
+        'any.required': 'AZURE_STORAGE_CONNECTION_STRING is required',
       }),
     },
   };

@@ -34,9 +34,6 @@ export class ProductDto {
   @Type(() => Number)
   height: number;
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
   image?: string;
 
   @ApiProperty()

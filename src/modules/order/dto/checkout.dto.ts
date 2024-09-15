@@ -4,7 +4,9 @@ import { IsNumber, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CheckoutDto extends OrderDto {
-  @ApiProperty()
+  @ApiProperty({
+    type: () => [ListProducts],
+  })
   @ValidateNested({ each: true })
   @Type(() => ListProducts)
   products: ListProducts[];
