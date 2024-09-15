@@ -115,10 +115,13 @@ describe('Product Service', () => {
 
       const result = await service.create(dto);
       const { categoryName, ...productDto } = dto;
-      expect(repository.create).toBeCalledWith({
-        ...productDto,
-        categoryId: 1,
-      });
+      expect(repository.create).toBeCalledWith(
+        {
+          ...productDto,
+          categoryId: 1,
+        },
+        undefined,
+      );
 
       expect(result).toEqual({
         id: 1,
@@ -209,7 +212,7 @@ describe('Product Service', () => {
 
       expect(productCategoryRepository.create).toBeCalledWith({
         name: 'test category',
-      });
+      }, undefined);
       expect(productCategoryRepository.create).toBeCalledTimes(1);
     });
   });
@@ -367,14 +370,14 @@ describe('Product Service', () => {
 
       jest.spyOn(repository, 'update').mockResolvedValue(null);
 
-      const result = await service.update(id, dto);
+      const result = await service.update(id, dto, undefined);
       expect(result).toBeNull();
       expect(repository.getById).toBeCalledWith(id);
       expect(repository.getByName).toBeCalledWith('test');
       expect(productCategoryRepository.getByName).toBeCalledWith(
         'test category',
       );
-      expect(repository.update).toBeCalledWith(id, dto);
+      expect(repository.update).toBeCalledWith(id, dto, undefined);
     });
 
     it('should throw error when product not found', async () => {
@@ -417,10 +420,10 @@ describe('Product Service', () => {
 
       jest.spyOn(repository, 'delete').mockResolvedValue(null);
 
-      const result = await service.delete(id);
+      const result = await service.delete(id, undefined);
       expect(result).toBeNull();
       expect(repository.getById).toBeCalledWith(id);
-      expect(repository.delete).toBeCalledWith(id);
+      expect(repository.delete).toBeCalledWith(id, undefined);
     });
 
     it('should throw error when product not found', async () => {
@@ -428,7 +431,9 @@ describe('Product Service', () => {
 
       jest.spyOn(repository, 'getById').mockResolvedValue(null);
 
-      await expect(service.delete(id)).rejects.toThrowError('Product not found');
+      await expect(service.delete(id)).rejects.toThrowError(
+        'Product not found',
+      );
     });
   });
 
@@ -461,7 +466,7 @@ describe('Product Service', () => {
       const result = await service.addStock(id, stock);
       expect(result).toBeNull();
       expect(repository.getById).toBeCalledWith(id);
-      expect(repository.update).toBeCalledWith(id, { stock: 20 });
+      expect(repository.update).toBeCalledWith(id, { stock: 20 }, undefined);
     });
 
     it('should throw error when product not found', async () => {
@@ -505,7 +510,7 @@ describe('Product Service', () => {
       const result = await service.reduceStock(id, stock);
       expect(result).toBeNull();
       expect(repository.getById).toBeCalledWith(id);
-      expect(repository.update).toBeCalledWith(id, { stock: 5 });
+      expect(repository.update).toBeCalledWith(id, { stock: 5 }, undefined);
     });
 
     it('should throw error when product not found', async () => {

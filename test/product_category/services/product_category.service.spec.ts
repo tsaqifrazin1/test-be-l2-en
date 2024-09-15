@@ -53,8 +53,8 @@ describe('ProductCategoryService', () => {
         deletedAt: null,
       });
 
-      await service.create(dto);
-      expect(service.create).toBeCalledWith(dto);
+      await service.create(dto, 'system');
+      expect(service.create).toBeCalledWith(dto, 'system');
     });
   });
 
@@ -145,8 +145,8 @@ describe('ProductCategoryService', () => {
 
       jest.spyOn(service, 'update').mockResolvedValue(null);
 
-      await service.update(id, dto);
-      expect(service.update).toBeCalledWith(id, dto);
+      await service.update(id, dto, 'system');
+      expect(service.update).toBeCalledWith(id, dto, 'system');
     });
 
     it('should throw NotFoundException if product category not found', async () => {
@@ -174,8 +174,8 @@ describe('ProductCategoryService', () => {
 
       jest.spyOn(service, 'delete').mockResolvedValue(null);
 
-      await service.delete(id);
-      expect(service.delete).toBeCalledWith(id);
+      await service.delete(id, 'system');
+      expect(service.delete).toBeCalledWith(id, 'system');
     });
 
     it('should throw NotFoundException if product category not found', async () => {

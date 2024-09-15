@@ -51,7 +51,7 @@ describe('ProductCategoryController', () => {
       });
 
       const result = await controller.createProductCategory(dto);
-      expect(service.create).toBeCalledWith(dto);
+      expect(service.create).toBeCalledWith(dto, 'system');
       expect(result).toEqual({
         message: 'success create product_category',
         data: {
@@ -141,7 +141,7 @@ describe('ProductCategoryController', () => {
       jest.spyOn(service, 'update').mockResolvedValue();
 
       const result = await controller.updateProductCategoryById(id, dto);
-      expect(service.update).toBeCalledWith(id, dto);
+      expect(service.update).toBeCalledWith(id, dto, 'system');
       expect(result).toEqual({
         message: 'success update product_category',
       });
@@ -155,7 +155,7 @@ describe('ProductCategoryController', () => {
       jest.spyOn(service, 'delete').mockResolvedValue();
 
       const result = await controller.deleteProductCategoryById(id);
-      expect(service.delete).toBeCalledWith(id);
+      expect(service.delete).toBeCalledWith(id, 'system');
       expect(result).toEqual({
         message: 'success delete product_category',
       });

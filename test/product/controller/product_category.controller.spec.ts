@@ -84,7 +84,7 @@ describe('ProductController', () => {
       });
 
       const result = await controller.createProduct(dto);
-      expect(productService.create).toBeCalledWith(dto);
+      expect(productService.create).toBeCalledWith(dto, 'system');
       expect(result).toEqual({
         message: 'success create product',
         data: {
@@ -264,7 +264,7 @@ describe('ProductController', () => {
       jest.spyOn(productService, 'update').mockResolvedValue(null);
 
       await controller.updateProductById(id, dto);
-      expect(productService.update).toBeCalledWith(id, dto);
+      expect(productService.update).toBeCalledWith(id, dto, 'system');
     });
   });
 
@@ -275,7 +275,7 @@ describe('ProductController', () => {
       jest.spyOn(productService, 'delete').mockResolvedValue(null);
 
       await controller.deleteProductById(id);
-      expect(productService.delete).toBeCalledWith(id);
+      expect(productService.delete).toBeCalledWith(id, 'system');
     });
   });
 
@@ -287,7 +287,7 @@ describe('ProductController', () => {
       jest.spyOn(productService, 'addStock').mockResolvedValue(null);
 
       await controller.addStock(id, stock);
-      expect(productService.addStock).toBeCalledWith(id, stock);
+      expect(productService.addStock).toBeCalledWith(id, stock, 'system');
     });
   });
 
@@ -299,7 +299,7 @@ describe('ProductController', () => {
       jest.spyOn(productService, 'reduceStock').mockResolvedValue(null);
 
       await controller.reduceStock(id, stock);
-      expect(productService.reduceStock).toBeCalledWith(id, stock);
+      expect(productService.reduceStock).toBeCalledWith(id, stock, 'system');
     });
   });
 });

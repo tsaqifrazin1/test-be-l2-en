@@ -385,7 +385,7 @@ describe('OrderService', () => {
       const result = await orderService.updateStatus(id, status);
 
       expect(result).toBeNull();
-      expect(orderRepository.update).toBeCalledWith(id, { status });
+      expect(orderRepository.update).toBeCalledWith(id, { status }, undefined);
     });
 
     it('should update status to canceled', async () => {
@@ -440,7 +440,7 @@ describe('OrderService', () => {
 
       expect(result).toBeNull();
 
-      expect(productService.addStock).toBeCalledWith(1, 2);
+      expect(productService.addStock).toBeCalledWith(1, 2, undefined);
     });
   });
 });
