@@ -20,7 +20,11 @@ async function bootstrap() {
   });
   app.setGlobalPrefix('api');
   app.enable('trust proxy');
-  app.use(helmet.default());
+  app.use(
+    helmet.default({
+      contentSecurityPolicy: false,
+    }),
+  );
   app.use(compression());
   app.use(morgan('tiny'));
   setupSwagger(app);
