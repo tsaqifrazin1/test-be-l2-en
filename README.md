@@ -131,7 +131,7 @@ Please submit your finished test to [bit.ly/4cWYsiX](https://bit.ly/4cWYsiX)
     - `POSTGRES_PORT_MIGRATION` s use for migration, you can use -    `5432 (based on db container)` if the database running on same server
     - `ADMIN_EMAIL` is use for generate first admin user email
     - `ADMIN_PASSWORD` is use for generate first admin user password
-    - `AZURE_STORAGE_CONNECTION_STRING` for upload email to azure
+    - `AZURE_STORAGE_CONNECTION_STRING` for upload email to azure u can use `"DefaultEndpointsProtocol=https;AccountName=testblobs38219032;AccountKey=7UBSFOR4IYwFPAtv87GDFXKMOerigFkrN7Qeq1zQcb6pQ8VXk+vTxHZmlqwOx+R1wfLGaR6wuZY++AStN/RYtw==;EndpointSuffix=core.windows.net"` for testing purpose
 
 
   - Run PostgreSQL Container
@@ -153,3 +153,8 @@ Please submit your finished test to [bit.ly/4cWYsiX](https://bit.ly/4cWYsiX)
     docker build -t klontong-app-image .
     docker run -d -p 8010:8010 --link db:db --name klontong-app-container klontong-app-image
     ```  
+
+Notes: 
+```
+Recheck Container name if error when deploying using Docker
+```
